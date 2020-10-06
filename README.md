@@ -2,6 +2,12 @@
 
 firefox-launcher starts/stops/suspends multiple firefoxes.
 
+## Installation
+
+```
+go get -u github.com/susurri/firefox-launcher/cmd/firefox-launcher
+```
+
 ## Usage
 
 Run `firefox-launcher` and type `help` at the prompt.

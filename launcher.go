@@ -309,6 +309,7 @@ func Run() {
 	initVars()
 	fd := lockpid(openpid())
 	defer syscall.Close(fd)
+	defer syscall.Flock(fd, syscall.LOCK_UN)
 	profilemap := loadProfiles()
 	configs := loadConfig()
 	configmap := configsToMap(&configs)

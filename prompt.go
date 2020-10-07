@@ -1,6 +1,7 @@
 package launcher
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 	"strings"
@@ -29,6 +30,9 @@ func validateCommand(input string) bool {
 		}
 		return true
 	case "set":
+		if len(words) != 3 {
+			return false
+		}
 		ok := false
 		modes :=  []string{"auto", "on", "off", "suspend", "none"}
 		for _, w := range modes {
@@ -137,10 +141,12 @@ func promptLoop(pm bool) {
 		p.Run()
 		return
   }
-	var s string
-	for {
-		fmt.Print("> ")
-		fmt.Scanln(&s)
+	scanner := bufio.NewScanner(os.Stdin)
+	fmt.Print("> ")
+	for scanner.Scan() {
+		s := scanner.Text()
+		fmt.Println(s)
 		executor(s)
+		fmt.Print("> ")
 	}
 }

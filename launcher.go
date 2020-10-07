@@ -237,6 +237,7 @@ func startFirefox(name string) {
 
 func applyFirefoxMode(ff *FirefoxMap) {
 	for k, v := range *ff {
+		v.Update()
 		switch v.Mode {
 		case Auto:
 			if v.Status == Down {

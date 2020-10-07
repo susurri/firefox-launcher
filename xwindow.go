@@ -35,7 +35,8 @@ func pidToWindowID(pid int) (string, error) {
 		lines := strings.Split(string(out),"\n")
 		for _, line := range(lines) {
 			words := strings.Fields(line)
-			if p, err := strconv.Atoi(words[2]); err != nil && p == pid {
+			if len(words) < 3 { break }
+			if p, err := strconv.Atoi(words[2]); err == nil && p == pid {
 				return words[0], nil
 			}
 		}

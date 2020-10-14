@@ -224,6 +224,10 @@ func commandExecutor(input *string, ff *FirefoxMap) {
 		if err == nil {
 			(*ff)[p] = Firefox{Pid: (*ff)[p].Pid, Status: (*ff)[p].Status, RealPath: (*ff)[p].RealPath, Mode: mode}
 		}
+	case "shutdown":
+		for k := range(*ff) {
+			(*ff)[k] = Firefox{Pid: (*ff)[k].Pid, Status: (*ff)[k].Status, RealPath: (*ff)[k].RealPath, Mode: Off}
+		}
 	default:
 		return
 	}

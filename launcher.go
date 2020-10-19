@@ -311,9 +311,7 @@ func makeSuggest(pm *map[string]Profile) []prompt.Suggest {
 // Run is the entry point
 func Run() {
 	initVars()
-	fd := lockpid(openpid())
-	defer syscall.Close(fd)
-	defer syscall.Flock(fd, syscall.LOCK_UN)
+	writepid()
 	profilemap := loadProfiles()
 	configs := loadConfig()
 	configmap := configsToMap(&configs)

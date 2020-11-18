@@ -234,7 +234,7 @@ func commandExecutor(input *string, ff *FirefoxMap) {
 }
 
 func startFirefox(name string) {
-	cmd := exec.Command("setsid", "firefox", "--no-remote", "-P", name)
+	cmd := exec.Command("setsid", "-f", "firefox", "--no-remote", "-P", name)
 	err := cmd.Start()
 	if err != nil { log.Fatal(err) }
 }

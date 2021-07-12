@@ -175,7 +175,7 @@ func getStatus(pid int) Status {
 		p, err := process.NewProcess(int32(pid))
 		if err != nil { log.Fatal(err) }
 		if exe, err := p.Exe(); err == nil {
-			if exe == "/usr/lib/firefox/firefox" {
+			if exe == "/usr/lib/firefox/firefox" || exe == "/usr/lib64/firefox/firefox" {
 				return Up
 			}
 		}

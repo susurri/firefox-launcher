@@ -15,6 +15,7 @@ import (
 
 	"github.com/c-bata/go-prompt"
 	"github.com/shirou/gopsutil/process"
+	"github.com/susurri/firefox-launcher/xwindow"
 	"gopkg.in/ini.v1"
 )
 
@@ -23,16 +24,16 @@ type Mode int
 
 // Mode definitions for firefox instance
 const (
-        Auto Mode = iota
-        On
-        Off
-        Suspend
-        None
+	Auto Mode = iota
+	On
+	Off
+	Suspend
+	None
 )
 
 func (m Mode) String() string {
 	switch m {
-  case Auto:
+	case Auto:
 		return "Auto"
 	case On:
 		return "On"
@@ -63,6 +64,7 @@ func strToMode(s string) (Mode, error) {
 		return None, fmt.Errorf("Invalid mode string %s found", s)
 	}
 }
+
 // Config configures mode of firefox instance
 type Config struct {
 	Name string
@@ -91,9 +93,9 @@ const programName = "firefox-launcher"
 
 // Profile of firefox
 type Profile struct {
-	Name string
+	Name       string
 	IsRelative int
-	Path string
+	Path       string
 }
 
 // Status is status of firefox process
@@ -117,15 +119,17 @@ func (s Status) String() string {
 }
 
 var (
-	firefoxHome string
+	firefoxHome    string
 	profileSuggest []prompt.Suggest
 	channelCommand chan string
-	channelAck chan string
+	channelAck     chan string
 )
 
 func getFirefoxHome() string {
 	homedir, err := os.UserHomeDir()
-	if err != nil { log.Fatal(err) }
+	if err != nil {
+		log.Fatal(err)
+	}
 	return filepath.Join(homedir, ".mozilla", "firefox")
 }
 
@@ -133,12 +137,16 @@ func loadProfiles() map[string]Profile {
 	profiles := make(map[string]Profile)
 	filename := filepath.Join(firefoxHome, "profiles.ini")
 	sections, err := ini.Load(filename)
-	if err != nil { log.Fatal(err) }
+	if err != nil {
+		log.Fatal(err)
+	}
 	for _, section := range sections.Sections() {
 		if strings.HasPrefix(section.Name(), "Profile") {
 			p := new(Profile)
 			err := section.MapTo(p)
-			if err != nil { log.Fatal(err) }
+			if err != nil {
+				log.Fatal(err)
+			}
 			profiles[p.Name] = *p
 		}
 	}
@@ -160,7 +168,9 @@ func getPid(path string) (int, error) {
 		return -2, err
 	}
 	link, err := os.Readlink(path)
-	if err != nil { log.Fatal(err) }
+	if err != nil {
+		log.Fatal(err)
+	}
 	pid, err := strconv.Atoi(strings.Split(link, "+")[1])
 	if err != nil {
 		return -2, err
@@ -170,10 +180,14 @@ func getPid(path string) (int, error) {
 
 func getStatus(pid int) Status {
 	exist, err := process.PidExists(int32(pid))
-	if err != nil { log.Fatal(err) }
+	if err != nil {
+		log.Fatal(err)
+	}
 	if exist {
 		p, err := process.NewProcess(int32(pid))
-		if err != nil { log.Fatal(err) }
+		if err != nil {
+			log.Fatal(err)
+		}
 		if exe, err := p.Exe(); err == nil {
 			if exe == "/usr/lib/firefox/firefox" || exe == "/usr/lib64/firefox/firefox" {
 				return Up
@@ -187,7 +201,9 @@ func createFirefoxMap(ps *map[string]Profile, cm *map[string]Mode) FirefoxMap {
 	firefox := NewFirefoxMap()
 	for _, p := range *ps {
 		mode, ok := (*cm)[p.Name]
-		if !ok { mode = None }
+		if !ok {
+			mode = None
+		}
 		var f Firefox
 		f.Mode = mode
 		f.RealPath = getRealPath(p.IsRelative, p.Path)
@@ -203,7 +219,7 @@ func commandExecutor(input *string, ff *FirefoxMap) {
 	configs := make(Configs, len(*ff))
 	i := 0
 	for k := range *ff {
-		configs[i] = Config{ Name: k, Mode: fmt.Sprint((*ff)[k].Mode) }
+		configs[i] = Config{Name: k, Mode: fmt.Sprint((*ff)[k].Mode)}
 		i++
 	}
 	sort.Sort(configs)
@@ -225,7 +241,7 @@ func commandExecutor(input *string, ff *FirefoxMap) {
 			(*ff)[p] = Firefox{Pid: (*ff)[p].Pid, Status: (*ff)[p].Status, RealPath: (*ff)[p].RealPath, Mode: mode}
 		}
 	case "shutdown":
-		for k := range(*ff) {
+		for k := range *ff {
 			(*ff)[k] = Firefox{Pid: (*ff)[k].Pid, Status: (*ff)[k].Status, RealPath: (*ff)[k].RealPath, Mode: Off}
 		}
 	default:
@@ -236,7 +252,9 @@ func commandExecutor(input *string, ff *FirefoxMap) {
 func startFirefox(name string) {
 	cmd := exec.Command("setsid", "-f", "firefox", "--no-remote", "-P", name)
 	err := cmd.Start()
-	if err != nil { log.Fatal(err) }
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func applyFirefoxMode(ff *FirefoxMap) {
@@ -277,16 +295,16 @@ func applyFirefoxMode(ff *FirefoxMap) {
 func launcherLoop(ps *map[string]Profile, cm *map[string]Mode) {
 	firefox := createFirefoxMap(ps, cm)
 	commandReceived := false
-	prevActiveWindowID := activeWindowID()
+	prevActiveWindowID := xwindow.ActiveWindowID()
 	for {
 		time.Sleep(1000 * time.Millisecond)
-		a := activeWindowID()
+		a := xwindow.ActiveWindowID()
 		if commandReceived || prevActiveWindowID != a {
 			applyFirefoxMode(&firefox)
 		}
 		prevActiveWindowID = a
 		select {
-		case input := <- channelCommand:
+		case input := <-channelCommand:
 			commandExecutor(&input, &firefox)
 			channelAck <- "done"
 			commandReceived = true
@@ -303,7 +321,7 @@ func initVars() {
 func makeSuggest(pm *map[string]Profile) []prompt.Suggest {
 	var s []prompt.Suggest
 	for p := range *pm {
-		s = append(s, prompt.Suggest{Text: p, Description: "profile " + p })
+		s = append(s, prompt.Suggest{Text: p, Description: "profile " + p})
 	}
 	return s
 }
@@ -318,6 +336,7 @@ func Run() {
 	profileSuggest = makeSuggest(&profilemap)
 	channelCommand = make(chan string)
 	channelAck = make(chan string)
+	xwindow.Init()
 	go launcherLoop(&profilemap, &configmap)
 	promptLoop(false)
 }

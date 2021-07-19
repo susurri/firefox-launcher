@@ -16,7 +16,6 @@ Run `firefox-launcher` and type `help` at the prompt.
 suspend firefox when it is not an active window.
 
 ## Requirements
-* xprop
 * wmctrl
 
 It has been tested on Ubuntu 20.04.

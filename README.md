@@ -16,12 +16,11 @@ Run `firefox-launcher` and type `help` at the prompt.
 suspend firefox when it is not an active window.
 
 ## Requirements
-* xprop
-* wmctrl
+An EWMH/NetWM compatible X Window Manager.
 
-It has been tested on Ubuntu 20.04.
+It has been tested on Gentoo Linux running Cinnamon desktop.
 
-It may work on other Linux distributions.
+It may work on the other Linux distributions and window managers.
 
 ## License
 

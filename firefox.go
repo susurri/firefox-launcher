@@ -1,7 +1,6 @@
 package launcher
 
 import (
-	"os/exec"
 	"syscall"
 	"time"
 
@@ -63,10 +62,10 @@ func (f Firefox) Suspend() {
 
 // Shutdown gracefully shutdowns the firefox
 func (f Firefox) Shutdown() {
-	w, err := xwindow.PidToWindowID(f.Pid)
+	_, err := xwindow.PidToWindowID(f.Pid)
 	if err == nil {
 		syscall.Kill(-f.Pid, syscall.SIGCONT)
-		exec.Command("wmctrl", "-i", "-c", w).Run()
+		xwindow.CloseWindowByPid(f.Pid)
 	}
 }
 

@@ -276,11 +276,12 @@ func applyFirefoxMode(ff *FirefoxMap) {
 		case On:
 			switch v.Status {
 			case Up:
-				syscall.Kill(-v.Pid, syscall.SIGCONT)
+				_ = syscall.Kill(-v.Pid, syscall.SIGCONT)
 			case Down:
 				startFirefox(k)
 			}
 		case Off:
+			xwindow.UpdatePidWindowMap()
 			v.Shutdown()
 		case Suspend:
 			if v.Status == Up {
@@ -295,10 +296,10 @@ func applyFirefoxMode(ff *FirefoxMap) {
 func launcherLoop(ps *map[string]Profile, cm *map[string]Mode) {
 	firefox := createFirefoxMap(ps, cm)
 	commandReceived := false
-	prevActiveWindowID := xwindow.ActiveWindowID()
+	prevActiveWindowID, _ := xwindow.ActiveWindowID()
 	for {
 		time.Sleep(1000 * time.Millisecond)
-		a := xwindow.ActiveWindowID()
+		a, _ := xwindow.ActiveWindowID()
 		if commandReceived || prevActiveWindowID != a {
 			applyFirefoxMode(&firefox)
 		}

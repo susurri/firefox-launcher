@@ -99,6 +99,8 @@ func getWindowList() ([]uint, error) {
 }
 
 func UpdatePidWindowMap() {
+	pidWindowMap = make(map[int]uint)
+
 	if wl, err := getWindowList(); err == nil {
 		for _, w := range wl {
 			if pid, err := getWindowPid(w); err == nil {

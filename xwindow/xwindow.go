@@ -111,7 +111,7 @@ func UpdatePidWindowMap() {
 func CloseWindowByPid(pid int) error {
 	var xev C.XClientMessageEvent
 	xcmev := (*C.XClientMessageEvent)(&xev)
-	atom := C.XInternAtom(display, C.CString("_NET_CLOSE_WINDOW"), C.False)
+	atom := C.XInternAtom(display, C.CString("_NET_CLOSE_WINDOW"), C.True)
 	window := (C.Window)(pidWindowMap[pid])
 	(*xcmev)._type = C.ClientMessage
 	(*xcmev).serial = 0

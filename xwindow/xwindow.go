@@ -109,8 +109,8 @@ func UpdatePidWindowMap() {
 }
 
 func CloseWindowByPid(pid int) error {
-	var xev C.XClientMessageEvent
-	xcmev := (*C.XClientMessageEvent)(&xev)
+	var xev C.XEvent
+	xcmev := (*C.XClientMessageEvent)((unsafe.Pointer)(&xev))
 	atom := C.XInternAtom(display, C.CString("_NET_CLOSE_WINDOW"), C.True)
 	window := (C.Window)(pidWindowMap[pid])
 	(*xcmev)._type = C.ClientMessage
@@ -124,7 +124,7 @@ func CloseWindowByPid(pid int) error {
 	for i := range data {
 		data[i] = 0
 	}
-	switch C.XSendEvent(display, root, C.False, (C.SubstructureNotifyMask | C.SubstructureRedirectMask), (*C.XEvent)((unsafe.Pointer)(&xev))) {
+	switch C.XSendEvent(display, root, C.False, (C.SubstructureNotifyMask | C.SubstructureRedirectMask), &xev) {
 	case 0:
 		return fmt.Errorf("XSendEvent conversion failed")
 	case C.BadValue:

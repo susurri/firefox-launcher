@@ -1,0 +1,26 @@
+linters:
+  enable-all: true
+  #disable-all: true
+  #enable:
+  #  - wsl
+  disable:
+    - scopelint  # deprecated
+    - golint  # deprecated
+    - interfacer  # deprecated
+    - maligned  # deprecated
+    - nlreturn  # covered by wsl
+    - gochecknoglobals  # too strict not to use package global variables
+    - forbidigo  # fmt.Print* are forbidden, which are needed for cli
+linters-settings:
+  gomnd:
+    settings:
+      mnd:
+        #checks: argument,case,condition,operation,return,assign
+        #ignored-numbers: 1000
+        #ignored-files: magic_.*.go
+        ignored-functions:
+          - syscall.Open
+          - os.OpenFile
+          - os.MkdirAll
+          - strconv.ParseInt
+          - strconv.AppendInt

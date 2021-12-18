@@ -11,6 +11,7 @@ linters:
     - nlreturn  # covered by wsl
     - gochecknoglobals  # too strict not to use package global variables
     - forbidigo  # fmt.Print* are forbidden, which are needed for cli
+    - varnamelen  # it is just annoying
 linters-settings:
   gomnd:
     settings:

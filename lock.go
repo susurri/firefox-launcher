@@ -15,7 +15,7 @@ import (
 func openpid() int {
 	lockfile := filepath.Join(xdg.RuntimeDir(), "firefox_launcher.pid")
 
-	fd, err := syscall.Open(lockfile, syscall.O_CREAT|syscall.O_RDWR, 0600)
+	fd, err := syscall.Open(lockfile, syscall.O_CREAT|syscall.O_RDWR, 0o600)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -24,7 +24,8 @@ func openpid() int {
 }
 
 func isRunning(fd int) bool {
-	buf := make([]byte, 255)
+	const MAXBUF = 255
+	buf := make([]byte, MAXBUF)
 
 	n, err := syscall.Read(fd, buf)
 	if err != nil {

@@ -17,13 +17,13 @@ func createConfig(configDir string, configName string) {
 	}
 
 	if _, err := os.Stat(configDir); err != nil {
-		err := os.MkdirAll(configDir, 0700)
+		err := os.MkdirAll(configDir, 0o700)
 		if err != nil {
 			log.Fatal(err)
 		}
 	}
 
-	f, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, 0600)
+	f, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, 0o600)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -108,7 +108,7 @@ func saveConfig(configs Configs) {
 		log.Fatal(err)
 	}
 
-	f, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, 0600)
+	f, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, 0o600)
 	if err != nil {
 		log.Fatal(err)
 	}

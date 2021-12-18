@@ -61,7 +61,7 @@ func (f Firefox) Suspend() {
 	}
 
 	if time.Now().Unix()*1000-ctime > 300*1000 {
-		syscall.Kill(-f.Pid, syscall.SIGSTOP)
+		_ = syscall.Kill(-f.Pid, syscall.SIGSTOP)
 	}
 }
 
@@ -69,7 +69,8 @@ func (f Firefox) Suspend() {
 func (f Firefox) Shutdown() {
 	_, err := xwindow.PidToWindowID(f.Pid)
 	if err == nil {
-		syscall.Kill(-f.Pid, syscall.SIGCONT)
+		_ = syscall.Kill(-f.Pid, syscall.SIGCONT)
+
 		xwindow.UpdatePidWindowMap()
 
 		if err = xwindow.CloseWindowByPid(f.Pid); err != nil {

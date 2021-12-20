@@ -1,4 +1,5 @@
 /go/
 /tmp/
 .envrc
-./firefox-launcher
+firefox-launcher
+!cmd/firefox-launcher/

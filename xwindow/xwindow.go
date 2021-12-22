@@ -2,10 +2,24 @@ package xwindow
 
 /*
 #cgo LDFLAGS: -lX11
+#include <stdio.h>
 #include <string.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
+
+#define MAXBUFLEN 1024
+
+int cerrorHandler(Display* disp, XErrorEvent* xev) {
+	char buf[MAXBUFLEN];
+	XGetErrorText(disp, xev -> error_code, buf, MAXBUFLEN);
+	fprintf(stderr, "Error in X11 : %s\n", buf);
+	return 0;
+}
+
+void set_error_handler() {
+	XSetErrorHandler(cerrorHandler);
+}
 */
 import "C"
 
@@ -28,6 +42,8 @@ func Init() {
 	if display == (*C.Display)(C.NULL) {
 		log.Fatal("cannot open Display\n")
 	}
+
+	_ = C.set_error_handler
 
 	pidWindowMap = make(map[int]uint)
 }

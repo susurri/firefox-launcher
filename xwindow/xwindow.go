@@ -43,7 +43,7 @@ func Init() {
 		log.Fatal("cannot open Display\n")
 	}
 
-	_ = C.set_error_handler
+	_ = C.set_error_handler()
 
 	pidWindowMap = make(map[int]uint)
 }
